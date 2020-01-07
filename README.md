@@ -224,19 +224,22 @@ Operating system is a mechanism provider that should provide different ways to s
 
 ### Scheduling algorithm goals:
 **For all systems:**
-– Fairness: giving each process a fair share of the CPU
-– Policy enforcement: seeing that stated policy is carried out
-– Balance: keeping all parts of the system busy
+- Fairness: giving each process a fair share of the CPU
+- Policy enforcement: seeing that stated policy is carried out
+- Balance: keeping all parts of the system busy
+
 **For batch systems (like banks):**
-– Maximize jobs per hour
-– Minimize time between submission and termination of a task
-– CPU utilization: keep the CPU busy at all times
+- Maximize jobs per hour
+- Minimize time between submission and termination of a task
+- CPU utilization: keep the CPU busy at all times
+
 **For interactive systems (like a normal PC):**
-– Respond to requests quickly
-– Meet users’ expectations (a task that is supposed to take a short time should finish quickly, and not surprise the user in terms of his/her expectations)
+- Respond to requests quickly
+- Meet users’ expectations (a task that is supposed to take a short time should finish quickly, and not surprise the user in terms of his/her expectations)
+
 **For Real-time systems (like satellites or fire alarms):**
-– Meeting deadlines: avoid losing data
-– Predictability: avoid quality degradation in multimedia systems
+- Meeting deadlines: avoid losing data
+- Predictability: avoid quality degradation in multimedia systems
 
 ### Scheduling in batch systems:
 - First-come first-served
