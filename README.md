@@ -207,18 +207,22 @@ In a message-passing model, the sending and receiving processes need to coordina
 Barriers help us make sure that all of the processes will start/continue doing their procedure starting from the same time. This helps us synchronize shared or dependant data between processes.
 When processes get to the barrier, they will be blocked until every other process arrives to the barrier to and then the processes will get through the barrier and continue running.
 
+### Famous inter-process communication problems (IPC)
+- The producer-consumer prblem
+- The dining philisophers problem
+- The readers writers problem
+- The sleeping barber problem
 
-
-### Scheduling
+## Scheduling
 As I mentioned before, a process is either CPU intensive or I/O intensive. A CPU intensive process has a longer CPU burst time compared to an I/O intensive process.
 Operating system is a mechanism provider that should provide different ways to schedule these processes with different burst times.
 
-#### Categories for scheduling algorithms:
+### Categories for scheduling algorithms:
 - Batch
 - Interactive
 - Real time
 
-#### Scheduling algorithm goals:
+### Scheduling algorithm goals:
 **For all systems:**
 – Fairness: giving each process a fair share of the CPU
 – Policy enforcement: seeing that stated policy is carried out
@@ -234,12 +238,12 @@ Operating system is a mechanism provider that should provide different ways to s
 – Meeting deadlines: avoid losing data
 – Predictability: avoid quality degradation in multimedia systems
 
-#### Scheduling in batch systems:
+### Scheduling in batch systems:
 - First-come first-served
 - Shortest job first: Maximize the throughput
 - Shortest remaining Time next
 
-#### Scheduling in interactive systems:
+### Scheduling in interactive systems:
 - Round-robin scheduling: Each process has a certain period in which it's allowed to do it's job (this is called quantum.) When that period passes, the scheduler will automatically choose the next runnable process and the previous process will be rescheduled to contiune its job.
 - Priority scheduling: In this method, CPU has multiple queues with different priorities. The scheduler has to choose a process from the higher-priority queues first (while being fair).
 - Multiple queues: This method is similar to the previous method with the slight difference that the processes inside each queue can have different priorities.
@@ -250,11 +254,5 @@ Operating system is a mechanism provider that should provide different ways to s
 - Guaranteed scheduling
 - Lottery scheduling
 
-#### Thread scheduling vs. process scheduling
+### Thread scheduling vs. process scheduling
 As mentioned before, a process is consisted of a couple of threads. If the kernel has to schedule processes, then it has no choice other than picking the threads inside a process all together. But there is another way too; the scheduler, is able to access and pick threads (instead of a whole process) amongst all runnable processes. Think of it as a picture  with higher resolution where kernel has more to work with.
-
-### Famous inter-process communication problems (IPC)
-- The producer-consumer prblem
-- The dining philisophers problem
-- The readers writers problem
-- The sleeping barber problem
