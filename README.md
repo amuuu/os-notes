@@ -1,5 +1,5 @@
 # Operating Systems Notes
-These are some notes about operating systems collected from all over the internet and my thoughts.
+These are some notes about how operating systems work. I've collected from all over the internet and added my own thoughts and words too.
 
 
 ## 1) Processes, Threads, and Scheduling
