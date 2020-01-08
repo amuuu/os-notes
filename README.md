@@ -268,6 +268,7 @@ We do have different types of memory:
 - Cache (which is fast)
 - Memory (which has a good enough speed)
 - Disk (which is slow)
+
 Memory manager has the job of using this hierarchy to create an abstraction (illusion) of easily accessible memory.
 
 ### Static relocation
@@ -445,7 +446,7 @@ There are many algorithms for page replacement:
 - Second chance page replacement
 - Clock page replacement
 - Least recently used page (LRU) replacement
-- Working set page replacement
+- Working set (WS) page replacement
 - WSClock page replacement
 
 ### Optimal page replacement algorithm
@@ -493,6 +494,7 @@ This algorithm:
 Associate counter with each page. At each reference increment counter and evict the page with the lowest counter. Implementing LRU with hardware is quite easy.
 
 **How it works:**
+
 Keep a n*n array for n pages. When a page frame, k, is referenced then **all the bits of the k row are set to 1 and all the bits of the k column are set to zero**. At any time the row with the lowest binary value is the row that is the least recently used (where row number = page frame number). The next lowest entry is the next recently used; and so on.
 
 If we have four page frames and access them as follows: 0123210323, it leads to the algorithm operating as follows:
@@ -500,7 +502,7 @@ If we have four page frames and access them as follows: 0123210323, it leads to 
 ![LRU using hardware](/photos/lruhardware.png)
 
 #### Implementing LRU with software:
-We can use software counter instead of harware ones. It implements a system of aging.
+It's also refered as NFU (Not Frequently Used). We can use software counter instead of harware ones. It implements a system of aging.
 ![LRU using software](/photos/lrusoftware.png)
 
 **How it works:**
@@ -508,3 +510,45 @@ We can use software counter instead of harware ones. It implements a system of a
 This process continues similarly for each clock tick.
 - When a page fault occurs, the counter with the lowest value is removed. It is obvious that a page that has not been referenced for, say, four clocks ticks will have four zeroes in the leftmost positions and will have a lower value that a page that has not been referenced for three clock ticks.
 
+### Working set model
+- Bring a process into memory by trying to execute first instruction and getting page fault. Continue until all pages that should be run by the process are in memory (the working set) (this is called demand paging)
+- Try to make sure that the working set is in memory before letting process run (this is called pre-paging)
+- If the memory is too small to contain the working set, there will be page faults all of the time (this is called thrashing)
+
+**How it works:**
+- The working set window is a moving window. At each memory reference, a new reference appears at one end and the oldest reference drops off the other end. A page is in the working set if it is referenced in the working set window. (working set window gets updated on each memory refrence) If a fault occurs, the page that's not in the working set gets evicted.
+- To avoid the overhead of keeping a list of the last k referenced pages, the working set is often implemented by keeping track of the time t of the last reference, and considering the working set to be all pages referenced within a certain period of time. (The amount of CPUT time used since the start of a process is called **virtual time**)
+
+One of the problems with this algorithm is it's expensive.
+
+### Working set (WS) replacement algorithm
+At each clock tick, scan all pages and check the R bit:
+- If R==1, set time of last use to current virtual time
+- If R==0 and age > smallest time, remove this page
+- If R==0 and age < smallest time, remember the smallest time
+
+**The problem with WS algorithm** is that we need to scan entire page table at each page fault to find a victim.
+
+
+### WSClock page replacement algorithm
+WSClock = WS replacement algorithm + clock replacement algorithm
+
+![WSClock algorithm](/photos/wsclock.png)
+
+If the hand comes all the way around to its starting point there are two cases to consider:
+- **At least one write has been scheduled**; the hand keeps moving looking for clean page, finds it because a write eventually completes. In this case, the first clean page that the hand gets to, will get evicted.
+- **No writes have been scheduled**. In this case, the first (clean) page will get evicted.
+
+
+### Replacement algorithms summary
+| Algorithm | Comment |
+|:---------:|:-------:|
+| Optimal | Not implementable, but useful as a benchmark |
+| FIFO | Might throw out important pages |
+| Second chance | Big improvement over FIFO |
+| Clock | Realistic |
+| LRU | Execllent but difficult to implement exactly |
+| NFU | Crude approximation of LRU |
+| NRU | Crude approximation of LRU |
+| WS | Expensive to implement |
+| WSClock | Good and efficient |
