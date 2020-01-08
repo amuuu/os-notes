@@ -1,6 +1,7 @@
 # Operating Systems Notes
 These are some notes about how operating systems work. I've collected from all over the internet and added my own thoughts and words too. It is based on the Tanenbaum's Modern Operating Systems book.
-Here is the table of content:
+
+Here is the table of contents:
 1) [Processes, Threads, and Scheduling](#1-processes-threads-and-scheduling)
 2) [Memory Management](#2-memory-management)
 
