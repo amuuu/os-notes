@@ -303,7 +303,7 @@ We can't keep all of processes in the main memory; they might be too much (hundr
 - Virtual memory: Allow program to run even if only part of it is in main memory
 
 ## Swapping
-![Swapping](/photos/swapping.png =500x)
+![Swapping](/photos/swapping.png)
 
 Programs grow as they execute; to handle the growth we have some solutions:
 - Using stack (return addresses and local variables)
@@ -312,7 +312,7 @@ Programs grow as they execute; to handle the growth we have some solutions:
 It's a good idea to allocate extra memory for both of these solutions. Also, when program goes back to disk, don’t bring holes along with it!!!
 
 #### Two ways to allocate space for growth
-![Two ways](/photos/twoways.png =500x)
+![Two ways](/photos/twoways.png)
 
 We can:
 a) Just add some extra space (have some room for growth).
@@ -329,7 +329,7 @@ Two techniques to keep track of free memory:
 ### Bitmaps
 A Bitmap or Bit Vector is series or collection of bits where each bit corresponds to a disk block. The bit can take two values: 0 and 1: 0 indicates that the block is allocated and 1 indicates a free block. The given instance of disk blocks on the disk in Figure 1 (where green blocks are allocated) can be represented by a bitmap of 16 bits as: 0000111000000110.
 
-![Bitmaps](/photos/bitmap.png =500x)
+![Bitmaps](/photos/bitmap.png)
 
 
 **Advantage:** Finding the first free block is efficient. It requires scanning the words (a group of 8 bits) in a bitmap for a non-zero word. (A 0-valued word has all bits 0). The first free block is then found by scanning for the first 1 bit in the non-zero word.
@@ -344,7 +344,7 @@ In this approach, the free disk blocks are linked together i.e. a free block con
     - Worst fit: Largest hole that fits (not usable)
     - Quick fit: keep list of common sizes (it's quick, but it can’t find neighbors to merge with)
 
-![Linkedlist](/photos/linkedlist.png =500x)
+![Linkedlist](/photos/linkedlist.png)
 
 **Conclusion:** the fits couldn’t out-smart the unknowable distribution of hole sizes
 **A drawback** of this method is the I/O required for free space list traversal.
@@ -365,7 +365,7 @@ If the disk is almost full, it might make sense to use a linked list, as it will
 - Virtual addresses are divided into pages (e.g. 512 bytes-64 KB range)
 - Transfer between RAM and disk is in whole pages
 
-![Virtual Memory](/photos/virtualmemory.jpg =500x)
+![Virtual Memory](/photos/virtualmemory.jpg)
 
 (obviously, the number of virtual pages will be more than physical pages)
 
@@ -377,7 +377,7 @@ If address is not in memorya "trap" to OS happens:
 - Re-starts instruction
 
 ### Page Table
-![Virtual Address](/photos/virtualaddress.png =500x)
+![Virtual Address](/photos/virtualaddress.png)
 
 - Virtual Address = (virtual page number, offset)
 - Virtual page number helps us find the index of the virtual address inside the page table
@@ -386,7 +386,7 @@ If address is not in memorya "trap" to OS happens:
 
 
 #### Page table entry
-![Page Table Entry](/photos/pagetableentry.png =500x)
+![Page Table Entry](/photos/pagetableentry.png)
 - Modified (dirty) bit: 1 means it has to written it to disk. 0 means the opposite.
 - Referenced bit: 1 means it was either read or written. Used to pick page to evict. Don’t want to get rid of page which is being used.
 - Present: 1 and Absent: 0
@@ -413,7 +413,7 @@ Software can figure out which pages to pre-load into TLB (e.g. Load server after
 ### Solution for large page table: Multi-level tables
 We want to avoid keeping the entire page table in memory because it is too big. We use multiple page tables with different hierarchies.
 
-![Page Table Hierarchy](/photos/hierarchy.png =500x)
+![Page Table Hierarchy](/photos/hierarchy.png)
 
 - The 32-bit address contains two bits for two page table fields and other bits as offset.
 - Top level of page table contains
@@ -428,7 +428,7 @@ We want to avoid keeping the entire page table in memory because it is too big. 
 - Entries keep track of (process, virtual page) associated with page frame.
 - Need to find frame associated with (process, virtual page) for **each** memory reference.
 
-![Inverted Table](/photos/invertedtable.png =500x)
+![Inverted Table](/photos/invertedtable.png)
 
 #### Searching through page frames efficiently
 - Keep heavily used frames in TLB
@@ -475,7 +475,7 @@ It is easy to implement but the oldest might be most heavily used.
 **But** it might still evict a heavily used page.
 
 ### Clock page replacement algorithm
-![Clock Page Replacement Algorithm](/photos/clock.png =500x)
+![Clock Page Replacement Algorithm](/photos/clock.png)
 
 When a page fault occurs, the page that the hand is pointing to is inspected. The action taken depends on the R bit;
 - If R=0, evict the page
@@ -499,11 +499,11 @@ Keep a n*n array for n pages. When a page frame, k, is referenced then **all the
 
 If we have four page frames and access them as follows: 0123210323, it leads to the algorithm operating as follows:
 
-![LRU using hardware](/photos/lruhardware.png =500x)
+![LRU using hardware](/photos/lruhardware.png)
 
 #### Implementing LRU with software:
 It's also refered as NFU (Not Frequently Used). We can use software counter instead of harware ones. It implements a system of aging.
-![LRU using software](/photos/lrusoftware.png =500x)
+![LRU using software](/photos/lrusoftware.png)
 
 **How it works:**
 - Consider the (a) column. After clock tick zero, the R flags for the six pages are set to 1, 0, 1, 0, 1 and 1. This indicates that pages 0, 2, 4 and 5 were referenced. This results in the counters being set as shown. We assume they all started at zero so that the shift right, in effect, did nothing and the reference bit was added to the leftmost bit.
@@ -533,7 +533,7 @@ At each clock tick, scan all pages and check the R bit:
 ### WSClock page replacement algorithm
 WSClock = WS replacement algorithm + clock replacement algorithm
 
-![WSClock algorithm](/photos/wsclock.png =500x)
+![WSClock algorithm](/photos/wsclock.png)
 
 If the hand comes all the way around to its starting point there are two cases to consider:
 - **At least one write has been scheduled**; the hand keeps moving looking for clean page, finds it because a write eventually completes. In this case, the first clean page that the hand gets to, will get evicted.
