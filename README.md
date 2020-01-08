@@ -475,6 +475,7 @@ It is easy to implement but the oldest might be most heavily used.
 
 ### Clock page replacement algorithm
 ![Clock Page Replacement Algorithm](/photos/clock.png)
+
 When a page fault occurs, the page that the hand is pointing to is inspected. The action taken depends on the R bit;
 - If R=0, evict the page
 - If R=1, Clear R and advance hand
