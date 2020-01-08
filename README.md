@@ -1,5 +1,8 @@
 # Operating Systems Notes
 These are some notes about how operating systems work. I've collected from all over the internet and added my own thoughts and words too. It is based on the Tanenbaum's Modern Operating Systems book.
+Here is the table of content:
+1) [Processes, Threads, and Scheduling] (#1-processes-threads-and-scheduling)
+2) [Memory Management] (#2-memory-management)
 
 
 ## 1) Processes, Threads, and Scheduling
@@ -449,7 +452,7 @@ There are many algorithms for page replacement:
 - Not possible unless know when pages will be referenced (crystal ball)
 - Used as ideal reference algorithm
 
-#### Not recently used
+#### Not recently used algorithm
 - Use R and M bits
 - Periodically clear R bit
     - Class 0: not referenced, not modified
@@ -458,12 +461,12 @@ There are many algorithms for page replacement:
     - Class 3: referenced, modified
 - Pick lowest priority page to evict
 
-#### FIFO
+#### FIFO algorithm
 - Keep list ordered by time (latest to arrive at the end of the list)
 - Evict the oldest (head of the line)
 It is easy to implement but the oldest might be most heavily used.
 
-#### Second chance
+#### Second chance algorithm
 - Pages are still sorted in FIFO order by arrival time.
 - Examine R bit. If it was 0, evict. If it was 1, put the page at end of list and set R to zero.
 **But** If change value of R bit frequently, might still evict a heavily used page.
