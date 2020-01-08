@@ -408,7 +408,7 @@ Software can figure out which pages to pre-load into TLB (e.g. Load server after
 ### Solution for large page table: Multi-level tables
 We want to avoid keeping the entire page table in memory because it is too big. We use multiple page tables with different hierarchies.
 
-![Page Table Hierarchy](/photos/pagetablehierarchy.png)
+![Page Table Hierarchy](/photos/hierarchy.png)
 
 - The 32-bit address contains two bits for two page table fields and other bits as offset.
 - Top level of page table contains
