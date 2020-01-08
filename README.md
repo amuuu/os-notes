@@ -330,7 +330,7 @@ A Bitmap or Bit Vector is series or collection of bits where each bit correspond
 **Advantage:** Finding the first free block is efficient. It requires scanning the words (a group of 8 bits) in a bitmap for a non-zero word. (A 0-valued word has all bits 0). The first free block is then found by scanning for the first 1 bit in the non-zero word.
 
 
-### Linkedlists
+### Linked lists
 In this approach, the free disk blocks are linked together i.e. a free block contains a pointer to the next free block. The block number of the very first disk block is stored at a separate location on disk and is also cached in memory.
 - We might want to use doubly linked lists to merge holes more easily.
 - Algorithms to fill in the holes in memory:
@@ -354,7 +354,7 @@ If the disk is almost full, it might make sense to use a linked list, as it will
 - Otherwise, page fault happens; OS gets the page, reads it in, and re-starts the instruction
 - While page is being read in, another process gets the CPU
 
-**Memory Management Unit** generates physical address from virtual address provided by the program and puts them on memory bus.
+**Memory Management Unit (MMU)** generates physical address from virtual address provided by the program and puts them on memory bus.
 
 ### Pages and page frames
 - Virtual addresses are divided into pages (e.g. 512 bytes-64 KB range)
@@ -364,9 +364,82 @@ If the disk is almost full, it might make sense to use a linked list, as it will
 
 (obviously, the number of virtual pages will be more than physical pages)
 
-#### Page fault processing
+### Page fault processing
 There is a present/absent bit which tells whether a page is in memory.
 If address is not in memorya "trap" to OS happens:
 - OS picks page to write to disk
 - Brings page with (needed) address into memory
 - Re-starts instruction
+
+### Page Table
+![Virtual Address](/photos/virtualaddress.png)
+
+- Virtual Address = (virtual page number, offset)
+- Virtual page number helps us find the index of the virtual address inside the page table
+- After the index is calculated, the present/absent bit is checked to find out whether the page already exists.
+- If present/absent bit is set to 1, attach page frame number to the front of the offset to create the physical address which is sent on the memory bus.
+
+
+#### Page table entry
+![Page Table Entry](/photos/pagetableentry.png)
+- Modified (dirty) bit: 1 means it has to written it to disk. 0 means the opposite.
+- Referenced bit: 1 means it was either read or written. Used to pick page to evict. Don’t want to get rid of page which is being used.
+- Present: 1 and Absent: 0
+- Protection bits: r, w, r/w
+
+### Paging problems
+- Virtual to physical mapping is done on every memory reference so mapping must be fast.
+- If the virtual address space is large, the page table will be large.
+
+### Solution for slow paging: TLB
+There are some naive solutions for the slow speed of paging but they are not really useful:
+- Bring page table for a process into MMU when it is started up and store it in registers.
+- Keep page table in main memory
+
+The better solution is this:
+### Translation Lookaside Buffers (TLB)
+Adding TLB to MMU, speeds up the address translation by storing frequently accessed frames. If we want to use TLB, beside the refrence bit, present/absent bit, protection bit, etc, we should add a **valid bit** which indicates whether a page is in use or not.
+If the address is inside MMU, we don't check page table at all. If not, it refers to page table and finds it. It also puts it in TLB.
+
+#### TLB managmement
+It can be done both in hardware and software. If it gets done in software, OS has to handle TLB faults whereas if it's done by hardware, it has to be handled by MMU.
+Software can figure out which pages to pre-load into TLB (e.g. Load server after client request) and it also keeps cache of frequently used pages
+
+### Solution for large page table: Multi-level tables
+We want to avoid keeping the entire page table in memory because it is too big. We use multiple page tables with different hierarchies.
+
+![Page Table Hierarchy](/photos/pagetablehierarchy.png)
+
+- The 32-bit address contains two bits for two page table fields and other bits as offset.
+- Top level of page table contains
+    - Entry 0 points to pages for program text
+    - Entry 1 points to pages for data
+    - Entry 1023 points to pages for stack
+
+**There's still another problem:** Multi-level page table works for 32-bit memory Doesn’t work for 64-bit memory; it gets too big.
+
+### Inverted page table
+- Keep one entry per (real) page frame in the “inverted” table.
+- Entries keep track of (process, virtual page) associated with page frame.
+- Need to find frame associated with (process, virtual page) for **each** memory reference.
+
+![Inverted Table](/photos/invertedtable.png)
+
+#### Searching through page frames efficiently
+- Keep heavily used frames in TLB
+- If miss, then can use and associative search to find virtual page to frame mapping
+- Use a hash table
+
+### Page replacement algorithms
+- If a new page is brought in, we need to choose a page to evict but we don't want to remove heavily used pages.
+- If page has been written to, we need to copy it to disk. Otherwise, it gets overwritten.
+
+There are many algorithms for page replacement:
+- Optimal page replacement algorithm
+- Not recently used page replacement
+- First-in, first-out page replacement
+- Second chance page replacement
+- Clock page replacement
+- Least recently used page replacement
+- Working set page replacement
+- WSClock page replacement
