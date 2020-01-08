@@ -420,7 +420,7 @@ We want to avoid keeping the entire page table in memory because it is too big. 
     - Entry 1 points to pages for data
     - Entry 1023 points to pages for stack
 
-**There's still another problem:** Multi-level page table works for 32-bit memory Doesn’t work for 64-bit memory; it gets too big.
+**There's still another problem:** Multi-level page table works for 32-bit memory Doesn’t work for 64-bit memory because it still gets too big.
 
 ### Inverted page table
 - Keep one entry per (real) page frame in the “inverted” table.
@@ -444,16 +444,16 @@ There are many algorithms for page replacement:
 - First-in, first-out page (FIFO) replacement
 - Second chance page replacement
 - Clock page replacement
-- Least recently used page replacement
+- Least recently used page (LRU) replacement
 - Working set page replacement
 - WSClock page replacement
 
-#### Optimal page replacement algorithm
+### Optimal page replacement algorithm
 - Pick the one which will be not used for the longest time
 - Not possible unless know when pages will be referenced (crystal ball)
 - Used as ideal reference algorithm
 
-#### Not recently used algorithm
+### Not recently used algorithm
 - Use R and M bits
 - Periodically clear R bit
     - Class 0: not referenced, not modified
@@ -462,13 +462,48 @@ There are many algorithms for page replacement:
     - Class 3: referenced, modified
 - Pick lowest priority page to evict
 
-#### FIFO algorithm
+### FIFO algorithm
 - Keep list ordered by time (latest to arrive at the end of the list)
 - Evict the oldest (head of the line)
 It is easy to implement but the oldest might be most heavily used.
 
-#### Second chance algorithm
+### Second chance algorithm
 - Pages are still sorted in FIFO order by arrival time.
 - Examine R bit. If it was 0, evict. If it was 1, put the page at end of list and set R to zero.
-**But** If change value of R bit frequently, might still evict a heavily used page.
+
+**But** it might still evict a heavily used page.
+
+### Clock page replacement algorithm
+![Clock Page Replacement Algorithm](/photos/clock.png)
+When a page fault occurs, the page that the hand is pointing to is inspected. The action taken depends on the R bit;
+- If R=0, evict the page
+- If R=1, Clear R and advance hand
+
+This algorithm:
+- Doesn't use age as a reason to evict page
+- Doesn’t distinguish between how long pages have not been referenced
+
+
+### LRU algorithm
+- Approximate LRU by *assuming* that recent page usage approximates long term page usage.
+- Could associate counters with each page and examine them but this is expensive.
+
+#### Implementing LRU with hardware:
+Associate counter with each page. At each reference increment counter and evict the page with the lowest counter. Implementing LRU with hardware is quite easy.
+
+**How it works:**
+Keep a n*n array for n pages. When a page frame, k, is referenced then **all the bits of the k row are set to 1 and all the bits of the k column are set to zero**. At any time the row with the lowest binary value is the row that is the least recently used (where row number = page frame number). The next lowest entry is the next recently used; and so on.
+
+If we have four page frames and access them as follows: 0123210323, it leads to the algorithm operating as follows:
+
+![LRU using hardware](/photos/lruhardware.png)
+
+#### Implementing LRU with software:
+We can use software counter instead of harware ones. It implements a system of aging.
+![LRU using software](/photos/lrusoftware.png)
+
+**How it works:**
+- Consider the (a) column. After clock tick zero, the R flags for the six pages are set to 1, 0, 1, 0, 1 and 1. This indicates that pages 0, 2, 4 and 5 were referenced. This results in the counters being set as shown. We assume they all started at zero so that the shift right, in effect, did nothing and the reference bit was added to the leftmost bit.
+This process continues similarly for each clock tick.
+- When a page fault occurs, the counter with the lowest value is removed. It is obvious that a page that has not been referenced for, say, four clocks ticks will have four zeroes in the leftmost positions and will have a lower value that a page that has not been referenced for three clock ticks.
 
