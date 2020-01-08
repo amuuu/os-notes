@@ -298,7 +298,7 @@ We can't keep all of processes in the main memory; they might be too much (hundr
 - Virtual memory: Allow program to run even if only part of it is in main memory
 
 ## Swapping
-![Swapping](/photos/swapping.png?raw=true)
+![Swapping](/photos/swapping.png)
 
 Programs grow as they execute; to handle the growth we have some solutions:
 - Using stack (return addresses and local variables)
@@ -307,7 +307,7 @@ Programs grow as they execute; to handle the growth we have some solutions:
 It's a good idea to allocate extra memory for both of these solutions. Also, when program goes back to disk, don’t bring holes along with it!!!
 
 #### Two ways to allocate space for growth
-![Two ways](/photos/twoways.png?raw=true)
+![Two ways](/photos/twoways.png)
 
 We can:
 a) Just add some extra space (have some room for growth).
@@ -324,7 +324,7 @@ Two techniques to keep track of free memory:
 ### Bitmaps
 A Bitmap or Bit Vector is series or collection of bits where each bit corresponds to a disk block. The bit can take two values: 0 and 1: 0 indicates that the block is allocated and 1 indicates a free block. The given instance of disk blocks on the disk in Figure 1 (where green blocks are allocated) can be represented by a bitmap of 16 bits as: 0000111000000110.
 
-![Bitmaps](/photos/bitmap.png?raw=true)
+![Bitmaps](/photos/bitmap.png)
 
 
 **Advantage:** Finding the first free block is efficient. It requires scanning the words (a group of 8 bits) in a bitmap for a non-zero word. (A 0-valued word has all bits 0). The first free block is then found by scanning for the first 1 bit in the non-zero word.
@@ -339,7 +339,7 @@ In this approach, the free disk blocks are linked together i.e. a free block con
     - Worst fit: Largest hole that fits (not usable)
     - Quick fit: keep list of common sizes (it's quick, but it can’t find neighbors to merge with)
 
-![Linkedlist](/photos/linkedlist.png?raw=true)
+![Linkedlist](/photos/linkedlist.png)
 
 **Conclusion:** the fits couldn’t out-smart the unknowable distribution of hole sizes
 **A drawback** of this method is the I/O required for free space list traversal.
@@ -360,7 +360,7 @@ If the disk is almost full, it might make sense to use a linked list, as it will
 - Virtual addresses are divided into pages (e.g. 512 bytes-64 KB range)
 - Transfer between RAM and disk is in whole pages
 
-![Virtual Memory](/photos/virtualmemory.jpg?raw=true)
+![Virtual Memory](/photos/virtualmemory.jpg)
 
 (obviously, the number of virtual pages will be more than physical pages)
 
