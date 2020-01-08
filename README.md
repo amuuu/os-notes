@@ -224,22 +224,19 @@ Operating system is a mechanism provider that should provide different ways to s
 
 ### Scheduling algorithm goals:
 **For all systems:**
-- Fairness: giving each process a fair share of the CPU
-- Policy enforcement: seeing that stated policy is carried out
-- Balance: keeping all parts of the system busy
-
+– Fairness: giving each process a fair share of the CPU
+– Policy enforcement: seeing that stated policy is carried out
+– Balance: keeping all parts of the system busy
 **For batch systems (like banks):**
-- Maximize jobs per hour
-- Minimize time between submission and termination of a task
-- CPU utilization: keep the CPU busy at all times
-
+– Maximize jobs per hour
+– Minimize time between submission and termination of a task
+– CPU utilization: keep the CPU busy at all times
 **For interactive systems (like a normal PC):**
-- Respond to requests quickly
-- Meet users’ expectations (a task that is supposed to take a short time should finish quickly, and not surprise the user in terms of his/her expectations)
-
+– Respond to requests quickly
+– Meet users’ expectations (a task that is supposed to take a short time should finish quickly, and not surprise the user in terms of his/her expectations)
 **For Real-time systems (like satellites or fire alarms):**
-- Meeting deadlines: avoid losing data
-- Predictability: avoid quality degradation in multimedia systems
+– Meeting deadlines: avoid losing data
+– Predictability: avoid quality degradation in multimedia systems
 
 ### Scheduling in batch systems:
 - First-come first-served
@@ -249,13 +246,127 @@ Operating system is a mechanism provider that should provide different ways to s
 ### Scheduling in interactive systems:
 - Round-robin scheduling: Each process has a certain period in which it's allowed to do it's job (this is called quantum.) When that period passes, the scheduler will automatically choose the next runnable process and the previous process will be rescheduled to contiune its job.
 - Priority scheduling: In this method, CPU has multiple queues with different priorities. The scheduler has to choose a process from the higher-priority queues first (while being fair).
-- Multiple queues: This method is similar to the previous method with the slight difference that the processes inside each queue can have different priorities.
+- Multiple queues: This method is similar to the previous method with the slight difference that the processes inside each queue gets different quantums. So the shortest gets (high priority) out first.
 - Fair-share scheduling: In this algorithm, the CPU usage is equally distributed among system users or groups, as opposed to equal distribution among processes. One common method of logically implementing the fair-share scheduling strategy is to recursively apply the round-robin scheduling strategy at each level of abstraction (processes, users, groups, etc.) The time quantum required by round-robin is arbitrary, as any equal division of time will produce the same results.
+- Shortest process next: It works if we know the remaining times of processes.
+- Lottery scheduling: Hold lottery for cpu time several times a second.
 
 **Other aglorithms:**
-- Shortest process next
 - Guaranteed scheduling
-- Lottery scheduling
 
 ### Thread scheduling vs. process scheduling
 As mentioned before, a process is consisted of a couple of threads. If the kernel has to schedule processes, then it has no choice other than picking the threads inside a process all together. But there is another way too; the scheduler, is able to access and pick threads (instead of a whole process) amongst all runnable processes. Think of it as a picture  with higher resolution where kernel has more to work with.
+
+
+## 2) Memory management
+So here's the problem: Computers don't have infinite memory and even if we had 2048TB of RAM, it still wouldn't be enough.
+We do have different types of memory:
+- Cache (which is fast)
+- Memory (which has a good enough speed)
+- Disk (which is slow)
+Memory manager has the job of using this hierarchy to create an abstraction (illusion) of easily accessible memory.
+
+### Static relocation
+We have more than one program at a time to run. We have to think of a way to use the limited memory to run multiple programs. The most basic idea would be static relocation.
+Here's how it works:
+- Divide memory into (for example) 2 KB blocks, and associate a 4 bit protection key. Keep keys in registers and hardware prevents program from accessing block
+with another protection key.
+- Load first instruction of program at address x, and add x to every subsequent address during loading.
+
+Two problems with static recloation:
+- Let's say there is an `ADD` instruction in the 25th block. We run another program that has a `JMP 25` instruction and in the 25th block it has a `CMP` (or any other instruction). In this case our `ADD` instruction that previously existed, will be lost.
+- Also, static reloctaion is too slow.
+
+Instead of having our programs access the memory directly, we create abstract memory space for program to exist in. In this case:
+- Each program has its own set of addresses
+- The addresses are different for each program
+- Call it the address space of the program
+
+This is called dynamic relocation.
+
+### Base and limit registers
+- It's a form of dynamic relocation
+- Base contains beginning address of program
+- Limit contains length of program
+- Program references memory, adds base address to address generated by process. Checks to see if address is larger then limit. If so, it generates fault.
+
+Disadvantage: Addition and comparison have to be done on every instruction.
+
+### How to run more programs and fit them in the main memory at once?
+We can't keep all of processes in the main memory; they might be too much (hundreds) and too big (e.g. 200MB program). We have two approaches to solve this problem:
+- Swap: Bring program in and run it for awhile then put it back and bring another program.
+- Virtual memory: Allow program to run even if only part of it is in main memory
+
+## Swapping
+![Swapping](/photos/swapping.png?raw=true)
+
+Programs grow as they execute; to handle the growth we have some solutions:
+- Using stack (return addresses and local variables)
+- Data segmentation (heap for variables which are dynamically allocated and released)
+
+It's a good idea to allocate extra memory for both of these solutions. Also, when program goes back to disk, don’t bring holes along with it!!!
+
+#### Two ways to allocate space for growth
+![Two ways](/photos/twoways.png?raw=true)
+
+We can:
+a) Just add some extra space (have some room for growth).
+b) Have our stack grow downwards, and data grow upwards.
+
+
+### Managing free memory
+Two techniques to keep track of free memory:
+- Bitmaps
+- Linked lists
+- Grouping
+- Counting
+
+### Bitmaps
+A Bitmap or Bit Vector is series or collection of bits where each bit corresponds to a disk block. The bit can take two values: 0 and 1: 0 indicates that the block is allocated and 1 indicates a free block. The given instance of disk blocks on the disk in Figure 1 (where green blocks are allocated) can be represented by a bitmap of 16 bits as: 0000111000000110.
+
+![Bitmaps](/photos/bitmap.png?raw=true)
+
+
+**Advantage:** Finding the first free block is efficient. It requires scanning the words (a group of 8 bits) in a bitmap for a non-zero word. (A 0-valued word has all bits 0). The first free block is then found by scanning for the first 1 bit in the non-zero word.
+
+
+### Linkedlists
+In this approach, the free disk blocks are linked together i.e. a free block contains a pointer to the next free block. The block number of the very first disk block is stored at a separate location on disk and is also cached in memory.
+- We might want to use doubly linked lists to merge holes more easily.
+- Algorithms to fill in the holes in memory:
+    - Next fit
+    - Best fit: Smallest hole that fits (it's slow)
+    - Worst fit: Largest hole that fits (not usable)
+    - Quick fit: keep list of common sizes (it's quick, but it can’t find neighbors to merge with)
+
+![Linkedlist](/photos/linkedlist.png?raw=true)
+
+**Conclusion:** the fits couldn’t out-smart the unknowable distribution of hole sizes
+**A drawback** of this method is the I/O required for free space list traversal.
+
+### Tradeoff between bitmaps and linkedlists:
+If the disk is almost full, it might make sense to use a linked list, as it will need less blocks than the bitmap. However, most of the time the bitmap will be store in main memory, which will make it more efficient than the linked list. I guess that if the disk is almost full, and you can store the linked list in main memory, then it's a good alternative too.
+
+## Virtual Memory
+- Program’s address space is broken up into fixed size pages
+- Pages are mapped to physical memory
+- If instruction refers to a page in memory, fine
+- Otherwise, page fault happens; OS gets the page, reads it in, and re-starts the instruction
+- While page is being read in, another process gets the CPU
+
+**Memory Management Unit** generates physical address from virtual address provided by the program and puts them on memory bus.
+
+### Pages and page frames
+- Virtual addresses are divided into pages (e.g. 512 bytes-64 KB range)
+- Transfer between RAM and disk is in whole pages
+
+![Virtual Memory](/photos/virtualmemory.jpg?raw=true)
+
+(obviously, the number of virtual pages will be more than physical pages)
+
+#### Page fault processing
+There is a present/absent bit which tells whether a page is in memory.
+If address is not in memorya "trap" to OS happens:
+- OS picks page to write to disk
+- Brings page with (needed) address into memory
+- Re-starts instruction
