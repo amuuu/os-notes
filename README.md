@@ -1,5 +1,5 @@
 # Operating Systems Notes
-These are some notes about how operating systems work. I've collected from all over the internet and added my own thoughts and words too.
+These are some notes about how operating systems work. I've collected from all over the internet and added my own thoughts and words too. It is based on the Tanenbaum's Modern Operating Systems book.
 
 
 ## 1) Processes, Threads, and Scheduling
@@ -437,9 +437,34 @@ We want to avoid keeping the entire page table in memory because it is too big. 
 There are many algorithms for page replacement:
 - Optimal page replacement algorithm
 - Not recently used page replacement
-- First-in, first-out page replacement
+- First-in, first-out page (FIFO) replacement
 - Second chance page replacement
 - Clock page replacement
 - Least recently used page replacement
 - Working set page replacement
 - WSClock page replacement
+
+#### Optimal page replacement algorithm
+- Pick the one which will be not used for the longest time
+- Not possible unless know when pages will be referenced (crystal ball)
+- Used as ideal reference algorithm
+
+#### Not recently used
+- Use R and M bits
+- Periodically clear R bit
+    - Class 0: not referenced, not modified
+    - Class 1: not referenced, modified (this never happens)
+    - Class 2: referenced, not modified
+    - Class 3: referenced, modified
+- Pick lowest priority page to evict
+
+#### FIFO
+- Keep list ordered by time (latest to arrive at the end of the list)
+- Evict the oldest (head of the line)
+It is easy to implement but the oldest might be most heavily used.
+
+#### Second chance
+- Pages are still sorted in FIFO order by arrival time.
+- Examine R bit. If it was 0, evict. If it was 1, put the page at end of list and set R to zero.
+**But** If change value of R bit frequently, might still evict a heavily used page.
+
