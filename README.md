@@ -302,6 +302,24 @@ We can't keep all of processes in the main memory; they might be too much (hundr
 - Swap: Bring program in and run it for awhile then put it back and bring another program.
 - Virtual memory: Allow program to run even if only part of it is in main memory
 
+### Internal fragmentation vs. external fragmentation
+
+#### Internal fragmentation:
+It happens when the memory is split into mounted sized blocks. Whenever a method request for the memory, the mounted sized block is allotted to the method. just in case the memory allotted to the method is somewhat larger than the memory requested, then the distinction between allotted and requested memory is that the Internal fragmentation.
+
+#### External fragmentation:
+It happens when there’s a sufficient quantity of area within the memory to satisfy the memory request of a method HOWEVER the process’s memory request cannot be fulfilled because the memory offered is during a non-contiguous manner. Either you apply first-fit or best-fit memory allocation strategy it’ll cause external fragmentation.
+
+#### The difference:
+
+| Internal Fragmentation | External Fragmentation |
+|:----:|:-----:|
+| In internal fragmentation fixed-sized memory, blocks square measure appointed to process | In external fragmentation, variable-sized memory blocks square measure appointed to method |
+| Internal fragmentation happens when the method or process is larger than the memory | External fragmentation happens when the method or process is removed |
+| The solution of internal fragmentation is best-fit block | Solution of external fragmentation is compaction, paging and segmentation |
+| Internal fragmentation occurs when memory is divided into fixed sized partitions | External fragmentation occurs when memory is divided into variable size partitions based on the size of processes |
+| The difference between memory allocated and required space or memory is called Internal fragmentation | The unused spaces formed between non-contiguous memory fragments are too small to serve a new process, is called External fragmentation |
+
 ## Swapping
 ![Swapping](/photos/swapping.png)
 
@@ -334,6 +352,10 @@ A Bitmap or Bit Vector is series or collection of bits where each bit correspond
 
 **Advantage:** Finding the first free block is efficient. It requires scanning the words (a group of 8 bits) in a bitmap for a non-zero word. (A 0-valued word has all bits 0). The first free block is then found by scanning for the first 1 bit in the non-zero word.
 
+**Disadvantage:**
+
+1) Serious internal fragmentation
+2) Many bits to store and process
 
 ### Linked lists
 In this approach, the free disk blocks are linked together i.e. a free block contains a pointer to the next free block. The block number of the very first disk block is stored at a separate location on disk and is also cached in memory.
@@ -364,6 +386,7 @@ If the disk is almost full, it might make sense to use a linked list, as it will
 ### Pages and page frames
 - Virtual addresses are divided into pages (e.g. 512 bytes-64 KB range)
 - Transfer between RAM and disk is in whole pages
+- Pages elmitinate external fragmentation.
 
 ![Virtual Memory](/photos/virtualmemory.jpg)
 
@@ -611,7 +634,7 @@ We might want 2 programs to share physical memory. An easy way to implement shar
 - Page fault handling
 - Instruction backup
 - Locking pages in memory
-- Backing store-where to put pages on disk
+- Backing store
 
 #### Page fault handling
 1) The hardware traps to the kernel, saving the program counter on the stack.
@@ -644,4 +667,46 @@ b) A seperate partition on the same disk which doesn't have any file systems.
 
 ![Backing store](/photos/partitioning.png)
 
-(a): Static swap area, (b): dynamic swap area
+(a) Static swap area, (b) dynamic swap area
+
+### Memory management system
+Is consisted of:
+1) A low-level MMU handler (**machine dependent**)
+2) A page fault handler (part of the kernel, **machine independent**). It asks the MMU to assign space for incoming page in process
+3) An external pager running in user space which containst the policy for page replacement and asks/recieves pages from the disk.
+
+![Memory management system](/photos/mms.png)
+
+### Segmentation
+A compiler has many tables that are built up as compilation proceeds, possibly including:
+- The source text being saved for the printed listing (on batch systems)
+- The symbol table (the names and attributes of variables)
+- The table containing integer, floating-point constants used
+- The parse tree (the syntactic analysis of the program)
+- The stack used for procedure calls within the compiler
+- External fragmentation can still happen but it can be handled (checkboard compaction)
+
+**Problem:** In a one-dimensional address space with growing tables, one table may bump into another.
+
+**Solution:** Segmented memory. It allows each table to grow or shrink independently of the other tables.
+
+#### Advantages of segmentation
+- Simplifies handling of data structures which are growing and shrinking
+- Address space of segment n is of form (n, local address) where (n, 0) is the starting address
+- Can compile segments separately from other segments
+- Can put library in a segment and share it
+- Can have different protections (r,w,x) for different segments
+
+### Paging vs. Segmentation
+
+| Consideration | Paging | Segmentation |
+|:-------:|:-------:|:-------:|
+| Does the programmer need to know that this technique is being used? | No | Yes |
+| How many linear address spaces are there? | 1 | Many |
+| Can the toal address space exceed the size of physical address? | Yes | Yes |
+| Can procedures and data be distinguished and separately proctered? | No | Yes |
+| Can tables whose size fluctuates be accommodated easily | No | Yes |
+| Is sharing of procedures between users facilitated? | No | Yes |
+| Why was this technique invented? | To get a large linear address space without having to buy more physical memory | To allow programs and data to be broken up into logically independent address spaces and to aid sharing and protection |
+
+
