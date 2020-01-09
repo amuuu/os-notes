@@ -552,3 +552,55 @@ If the hand comes all the way around to its starting point there are two cases t
 | NRU | Crude approximation of LRU |
 | WS | Expensive to implement |
 | WSClock | Good and efficient |
+
+### Global vs. Local pages
+- Global: Take into account all of the processes.
+- Local: Take into account just the process which faulted.
+
+#### Global
+Global is better for the memory. Working sets grow and shrink over time and processes have different sizes. We can assign the number of pages to each process proportional to its size.
+
+Start with allocation based on size and use **page fault frequency (PFF)** to modify allocation size for each process.
+
+- We can use combination of algorithms.
+- PFF is global component that determines page allocation, Replacement algorithm is local component that determines which page to kick out
+
+### Load control
+It's possible to thrash because of too much demand for memory.
+
+**Naive Solution:** Swap process(es) out.
+
+**Better Solution:**
+
+### Separate instruction and data address spaces
+The process address space might be too small and it's difficult to fit programs in a single address space. We split the address space into instructions (I) and data (D). But this is an old idea; a better way would be shared pages.
+
+### Shared pages
+Different users can run the same program (same instructions with different data) at the same time. It's better to share pages than having 2 copies. I and D spaces are useful here.
+
+The process can’t drop pages without being certain that they are not still in use.
+
+**Copy on write solution:** Map *data* to *read-only* pages. If write occurs, each process gets its own page.
+
+### Shared libraries
+Large libraries (e.g. graphics) are used by many process. It would be too expensive to bind to each process which wants to use them. We use shared libraries instead.
+
+Linker uses a stub routine at run time. In other words, shared library is only loaded once (the first time that a function in it is referenced).
+
+We need to use **position independent code** to avoid going to the wrong address. In order to achieve this, compiler does not produce absolute addresses when using shared libraries; it only produces relative addresses.
+
+![Shared libraries](/photos/sharedlibraries.png)
+
+### Memory mapped files
+- Process issues a system call to map a file onto a part of its virtual address space.
+- It can be used to communicate via shared memory for processes which share same files to read and write.
+
+### Cleaning policy
+- We can use a daemon to locate pages to evict before you need them instead of looking for victims when you need them.
+- Daemon sleeps most of the time, periodically awakens If there are too few empty frames and kicks out some frames.
+- Make sure that they are clean before claiming them.
+
+### Virtual memory interface
+We might want 2 programs to share physical memory. An easy way to implement shared memory would be to use [message passing](#message-passing). It avoids memory copy approach to shared memory.
+
+(**Distributed shared memory**: The page fault handler locates page in different machine, which sends page to machine that needs it.)
