@@ -503,6 +503,7 @@ If we have four page frames and access them as follows: 0123210323, it leads to 
 
 #### Implementing LRU with software:
 It's also refered as NFU (Not Frequently Used). We can use software counter instead of harware ones. It implements a system of aging.
+
 ![LRU using software](/photos/lrusoftware.png)
 
 **How it works:**
@@ -580,7 +581,8 @@ Different users can run the same program (same instructions with different data)
 
 The process can’t drop pages without being certain that they are not still in use.
 
-**Copy on write solution:** Map *data* to *read-only* pages. If write occurs, each process gets its own page.
+#### Copy on write solution:
+Map *data* to *read-only* pages. If write occurs, each process gets its own page.
 
 ### Shared libraries
 Large libraries (e.g. graphics) are used by many process. It would be too expensive to bind to each process which wants to use them. We use shared libraries instead.
@@ -604,3 +606,42 @@ We need to use **position independent code** to avoid going to the wrong address
 We might want 2 programs to share physical memory. An easy way to implement shared memory would be to use [message passing](#message-passing). It avoids memory copy approach to shared memory.
 
 (**Distributed shared memory**: The page fault handler locates page in different machine, which sends page to machine that needs it.)
+
+### OS issues for handling pages
+- Page fault handling
+- Instruction backup
+- Locking pages in memory
+- Backing store-where to put pages on disk
+
+#### Page fault handling
+1) The hardware traps to the kernel, saving the program counter on the stack.
+2) An assembly code routine is started to save the general registers and other volatile information.
+3) The operating system discovers that a page fault has occurred, and tries to discover which virtual page is needed.
+4) Once the virtual address that caused the fault is known, the system checks to see if this address is valid and the protection consistent with the access.
+5) If the page frame selected is dirty, the page is scheduled for transfer to the disk, and a context switch takes place.
+6) When page frame is clean, operating system looks up the disk address where the needed page is, schedules a disk operation to bring it in.
+7) When disk interrupt indicates page has arrived, page tables updated to reflect position, frame marked as being in normal state.
+
+#### Instruction backup
+The thing that causes the page fault are the instructions. When page fault happens, instruction is stopped part way through, OS handles the fault and then returns to instruction. After returning, the instruction should be restarted. But there is a problem here.
+
+For example, if the instruction starts at `1000` and the fault happens at `1004`, OS is supposed to know that the instruction has started from `1000` and restart it from there; not `1004`. This is handled by **hardware**, not the OS; hardware copies the current instruction to a register just before the instruction is executed.
+
+#### Locking pages in memory
+When a process has an I/O call, it waits for the data. In gets suspended while waiting and a new process starts and page fault occures. As mentioned [before](#copy-on-write-solution), incoming data writes over new page. In order for our I/O process to not lose any data, we **lock** the pages that are engaged in I/O.
+
+#### Backing store
+When a page is swapped out, it might go on:
+a) A seperate disk.
+b) A seperate partition on the same disk which doesn't have any file systems.
+
+**Static partitioning:** Allocate a fixed partition to the process when it starts up.
+- Manage a list of free chunks. Assign a big enough chunk to hold the process.
+- Starting address of a partition is kept in **the process table**. Page offset in the virtual address space corresponds to address on **disk**.
+- It can assign different areas for data, text, stack as data and stack can grow.
+
+**Dynamic partitioning:** Don’t allocate disk space in advance; swap pages in and out as needed (it needs disk map in memory).
+
+![Backing store](/photos/partitioning.png)
+
+(a): Static swap area, (b): dynamic swap area
