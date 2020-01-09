@@ -402,7 +402,7 @@ If address is not in memorya "trap" to OS happens:
 ### Page Table
 ![Virtual Address](/photos/virtualaddress.png)
 
-- Virtual Address = (virtual page number, offset)
+- Virtual Address = (virtual page number, offset) ((it changes if we use it in addition to segmentation)[#segmentation-with-paging])
 - Virtual page number helps us find the index of the virtual address inside the page table
 - After the index is calculated, the present/absent bit is checked to find out whether the page already exists.
 - If present/absent bit is set to 1, attach page frame number to the front of the offset to create the physical address which is sent on the memory bus.
@@ -709,4 +709,42 @@ A compiler has many tables that are built up as compilation proceeds, possibly i
 | Is sharing of procedures between users facilitated? | No | Yes |
 | Why was this technique invented? | To get a large linear address space without having to buy more physical memory | To allow programs and data to be broken up into logically independent address spaces and to aid sharing and protection |
 
+### Segmentation with paging
+Each program has a segment table (paged itself) containing segment descriptors
 
+#### In Multics system
+- Segment descriptor points to the page tables and says whether a segment is in the main memory or not. If any part of segment is in the memory, the entire segment is considered to be in memory.
+- Virtual Address = (segment number, page number, offset within page)
+
+![Multics](/photos/multics.png)
+
+(b): segment descriptor
+
+When a memory reference occurs, the following algorithm is carried out:
+
+1) The segment number used to find segment descriptor.
+2) Check is made to see if the segment’s page table is in memory.
+    - If not, segment fault occurs.
+    - If there is a protection violation, a fault (trap) occurs.
+3) Page table entry for the requested virtual page gets examined
+    - If the page itself is not in memory, a page fault is triggered.
+    - If it is in memory, the main memory address of the start of the page is extracted from the page table entry
+4) The offset is added to the page origin to give the main memory address where the word is located.
+5) The read or store finally takes place.
+
+![Multics address](/photos/multicsaddress.png)
+
+#### In Intel Pentium system
+It's overally similar to Multics with the difference that it has 3 bits for privilege levels in the address bits. It allows us to have different levels for kernel, system calls, shared libraries, user programs, etc.
+
+![Pentium descriptor](/photos/pentiumdescriptor.png)
+
+Pentium segement descriptor.
+
+![Pentium selector](/photos/pentiumselector.png)
+
+Conversion of a (selector, offset) pair to a linear address.
+
+![Pentium map](/photos/pentiummap.png)
+
+Mapping of a linear address onto a physical address
