@@ -815,7 +815,7 @@ Instead of having the external device interacting directly to a variable inside 
 Makes the I/O calls, spools, formats the I/O devices, etc.
 
 ### RAID
-RAID (Redundant Array of Inexpensive/Independent Disks) combines multiple disk drives components and distributes data across them in different levels. (This page)[https://www.dataplugs.com/en/raid-level-comparison-raid-0-raid-1-raid-5-raid-6-raid-10/] has more info about different levels of RAID.
+RAID (Redundant Array of Inexpensive/Independent Disks) combines multiple disk drives components and distributes data across them in different levels. [This page](https://www.dataplugs.com/en/raid-level-comparison-raid-0-raid-1-raid-5-raid-6-raid-10/) has more info about different levels of RAID.
 
 
 ### Disks
