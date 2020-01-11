@@ -853,6 +853,6 @@ Typical duties of a clock driver:
 6. Doing profiling, monitoring, statistics gathering.
 
 ### Power management hardware Issues
-The majority of the power in a system is consumed by the display. In a study done in 1998, 39% of the power was used by display whereas only 18% was consumed by CPU and 1% was consumed by the memory. (Memory doesn't need that much power.)
+The majority of the power in a system is consumed by the display. As a study done in 1998 showed, 39% of the power was used by display whereas only 18% was consumed by CPU and 1% was consumed by the memory. (Memory doesn't need that much power.)
 
 Also, cutting voltage by two: a) cuts the clock speed by two b) cuts the power consumption by four
