@@ -4,7 +4,7 @@ These are some notes about how operating systems work. I've collected from all o
 Here is the table of contents:
 1) [Processes, Threads, and Scheduling](#1-processes-threads-and-scheduling)
 2) [Memory Management](#2-memory-management)
-3) [I/O](#3-i-o)
+3) [I/O](#3-io)
 
 
 ## 1) Processes, Threads, and Scheduling
@@ -814,3 +814,45 @@ Instead of having the external device interacting directly to a variable inside 
 #### User space software
 Makes the I/O calls, spools, formats the I/O devices, etc.
 
+### RAID
+RAID (Redundant Array of Inexpensive/Independent Disks) combines multiple disk drives components and distributes data across them in different levels. (This page)[https://www.dataplugs.com/en/raid-level-comparison-raid-0-raid-1-raid-5-raid-6-raid-10/] has more info about different levels of RAID.
+
+
+### Disks
+Disk cylinder skew looks like this:
+
+![Disk sectors](/photos/disksect.png)
+
+It can be read in order (no interleaving) and it can be read in other ways too:
+
+![Disk format](/photos/diskformat.png)
+
+(because data transfer takes sometime and while it's happening, another sector can be read.)
+
+#### Delays
+There are 3 types of delays on a read from disk:
+1. Seek time (the time to move the arm to the proper cylinder).
+2. Rotational delay (the time for the proper sector to rotate under the head).
+3. Actual data transfer time.
+
+#### Disk scheduling algorithms
+- Shortest seek first (SSF)
+- The elevator algorithm
+
+#### Error handling
+There might be bad sectors on the disk. To handle this type of error, there are a set of spare sectors that can replace the bad sectors. The bad sector is bypassed by the disk afterwards.
+
+
+### Clock
+Typical duties of a clock driver:
+1. Maintaining the time of day.
+2. Preventing processes from running longer than they are allowed to.
+3. Accounting for CPU usage.
+4. Handling alarm system call made by user processes.
+5. Providing watchdog timers for parts of the system itself.
+6. Doing profiling, monitoring, statistics gathering.
+
+### Power management hardware Issues
+The majority of the power in a system is consumed by the display. In a study done in 1998, 39% of the power was used by display whereas only 18% was consumed by CPU and 1% was consumed by the memory. (Memory doesn't need that much power.)
+
+Also, cutting voltage by two: a) cuts the clock speed by two b) cuts the power consumption by four
