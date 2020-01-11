@@ -4,6 +4,7 @@ These are some notes about how operating systems work. I've collected from all o
 Here is the table of contents:
 1) [Processes, Threads, and Scheduling](#1-processes-threads-and-scheduling)
 2) [Memory Management](#2-memory-management)
+3) [I/O](#3-i-o)
 
 
 ## 1) Processes, Threads, and Scheduling
@@ -748,3 +749,68 @@ Conversion of a (selector, offset) pair to a linear address.
 ![Pentium map](/photos/pentiummap.png)
 
 Mapping of a linear address onto a physical address
+
+## 3) I/O
+
+#### Memory Mapped I/O
+Instead of having separate address types for external devices ports, put them in the similar address formats and put them in either the same address space (MMIO) or in two different address spaces (Hybrid).
+
+CPU, memory, and I/O are connected through a bus. CPU's interaction with memory can be done using a special bandwidth bus between them too. (dual-bus memory)
+
+![MMIO](/photos/mmio.png)
+
+#### Direct Memory Access (DMA)
+![DMA](/photos/dma.png)
+
+#### Interrupts
+![MMIO](/photos/interrupts.png)
+
+#### Percise interrupt
+1. PC (Program Counter) is saved in a known place.
+2. All instructions before the one pointed to by the PC have fully executed.
+3. No instruction beyond the one pointed to by the PC has been executed.
+4. Execution state of the instruction pointed to by the PC is known.
+
+#### Percise vs. inpercise interrupt
+![Persice vs. inpercise interrupt](/photos/perciseinterrupt.png)
+
+### I/O layers
+This is the basic layers of I/O in computers:
+
+![I/O Layers](/photos/iolayers2.png)
+
+### Interrupt handlers:
+They are used when we have an I/O reply. (e.g. when a device wants to acknowledge that its job has been done.)
+
+Here's what happens at that time:
+1. Save registers not already been saved by interrupt hardware.
+2. Set up a context for the interrupt service procedure.
+3. Set up a stack for the interrupt service procedure.
+4. Acknowledge the interrupt controller. If there is no centralized interrupt controller, reenable interrupts.
+5. Copy the registers from where they were saved to the process table.
+6. Run the interrupt service procedure.
+7. Choose which process to run next.
+8. Set up the MMU context for the process to run next.
+9. Load the new process’ registers, including its PSW.
+10. Start running the new process.
+
+### Device drivers
+Drivers have to set the hardware properties (e.g. registers) and connect to the I/O controller (e.g. printer controller, or digital camera controller).
+
+### Device independent I/O software
+They should:
+- Provide uniform interfaces with device drivers
+- Provide buffers
+- Report errors
+- Allocate and release dedicated devices
+- Provide device-independent block size
+
+#### Uniform interface
+SATA, SCSI, and IDE disk drivers should all have similar driver interfaces.
+
+#### Buffers
+Instead of having the external device interacting directly to a variable inside the user process, have it interact to one or two buffers in kernel space and have the kernel buffer interact to another buffer in the user program. Each buffer has exact copies of the same data. This is done through a network too; user 1 user buffer, user 1 kernel buffer, user 1 network controller buffer, user 2 user buffer, user 2 kernel buffer, and user 2 network controller buffer have exact copies of the same packet.
+
+#### User space software
+Makes the I/O calls, spools, formats the I/O devices, etc.
+
