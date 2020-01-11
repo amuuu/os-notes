@@ -1,10 +1,15 @@
 # Operating Systems Notes
 These are some notes about how operating systems work. I've collected from all over the internet and added my own thoughts and words too. It is based on the Tanenbaum's Modern Operating Systems book.
 
-Here is the table of contents:
+Some points before starting:
+- OS is just a mechanism provider. The user must be able to control the OS and tell the OS what algorithms and mechanisms to use.
+- Computer is basically consisted of 3 units; CPU, Memory, and I/O. 
+
+Table of contents:
 1) [Processes, Threads, and Scheduling](#1-processes-threads-and-scheduling)
 2) [Memory Management](#2-memory-management)
 3) [I/O](#3-io)
+4) [Sources](#4-sources)
 
 
 ## 1) Processes, Threads, and Scheduling
@@ -856,3 +861,18 @@ Typical duties of a clock driver:
 The majority of the power in a system is consumed by the display. As a study done in 1998 showed, 39% of the power was used by display whereas only 18% was consumed by CPU and 1% was consumed by the memory. (Memory doesn't need that much power.)
 
 Also, cutting voltage by two: a) cuts the clock speed by two b) cuts the power consumption by four
+
+
+## 4) Sources
+(Other than the Tanenbaum book): 
+- https://en.wikipedia.org/wiki Producer%E2%80%93consumer_problem#Using_monitors
+- http://www.cs.nott.ac.uk/~pszgxk/courses/g53ops/Processes/proc13-processcommunication.html
+- https://en.wikipedia.org/wiki/Monitor_(synchronization)
+- https://www.cs.cmu.edu/afs/cs/academic/class/15671-f95/www/handouts/concurrency/node7.html
+- https://www.geeksforgeeks.org/free-space-management-in-operating-system/
+- https://stackoverflow.com/questions/9247781/memory-management-using-bit-maps-vs-linked-list/41248266
+- http://www.cs.nott.ac.uk/~pszgxk/courses/g53ops/Memory%20Management/MM14-LRU.html
+- https://en.wikipedia.org/wiki/Working_set
+- https://www.geeksforgeeks.org/difference-between-internal-and-external-fragmentation/
+- https://cs.nyu.edu/courses/spring03/V22.0202-002/lecture-08.html
+- https://www.dataplugs.com/en/raid-level-comparison-raid-0-raid-1-raid-5-raid-6-raid-10/
